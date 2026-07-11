@@ -1,0 +1,74 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Соцмережі{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Соцмережі та контакти</h1>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm">← Товари</a>
+</div>
+
+<p class="hint-block">Додай Telegram, Instagram, TikTok та інші — вони зʼявляться у футері сайту.</p>
+
+<form method="post" class="form-card">
+  <input type="hidden" name="action" value="add">
+  <div class="form-section">
+    <h2>Нова соцмережа</h2>
+    <div class="preset-row">
+      {% for key, (label, icon) in presets.items() %}
+      <button type="button" class="preset-btn" data-name="{{ label }}" data-icon="{{ icon }}">{{ icon }} {{ label }}</button>
+      {% endfor %}
+    </div>
+    <label>Назва *
+      <input type="text" name="name" id="socialName" required placeholder="Instagram">
+    </label>
+    <label>Посилання *
+      <input type="url" name="url" required placeholder="https://instagram.com/treilzoom">
+    </label>
+    <label>Іконка (емодзі)
+      <input type="text" name="icon" id="socialIcon" value="🔗" maxlength="4">
+    </label>
+    <label>Порядок
+      <input type="number" name="sort_order" value="0" min="0">
+    </label>
+    <button type="submit" class="btn btn-primary">＋ Додати</button>
+  </div>
+</form>
+
+{% if links %}
+<div class="form-card" style="margin-top:1rem">
+  <h2>На сайті</h2>
+  <div class="social-admin-list">
+    {% for link in links %}
+    <div class="social-admin-item {% if not link.is_active %}inactive{% endif %}">
+      <span class="social-admin-icon">{{ link.icon }}</span>
+      <div class="social-admin-info">
+        <strong>{{ link.name }}</strong>
+        <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.url }}</a>
+      </div>
+      <div class="social-admin-actions">
+        <a href="{{ url_for('admin_social_edit', link_id=link.id) }}" class="btn btn-sm">✎</a>
+        <form method="post" style="display:inline">
+          <input type="hidden" name="action" value="toggle">
+          <input type="hidden" name="link_id" value="{{ link.id }}">
+          <button type="submit" class="btn btn-sm">{{ '👁' if link.is_active else '🚫' }}</button>
+        </form>
+        <form method="post" style="display:inline" onsubmit="return confirm('Видалити?')">
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="link_id" value="{{ link.id }}">
+          <button type="submit" class="btn btn-sm btn-danger">×</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+document.querySelectorAll(".preset-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.getElementById("socialName").value = btn.dataset.name;
+    document.getElementById("socialIcon").value = btn.dataset.icon;
+  });
+});
+</script>
+{% endblock %}

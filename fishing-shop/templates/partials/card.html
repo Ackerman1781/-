@@ -1,0 +1,34 @@
+<article class="card-wrap reveal">
+  <div class="card product-card"
+       tabindex="0"
+       role="button"
+       aria-label="{{ p.name }}"
+       data-id="{{ p.id }}"
+       data-name="{{ p.name|e }}"
+       data-price="{{ '%.0f'|format(p.price) }}"
+       data-weight="{{ (p.weight or '')|e }}"
+       data-cat="{{ (p.category_name or '')|e }}"
+       data-desc="{{ (p.description or '')|e }}"
+       data-image="{% if p.main_image %}{{ url_for('static', filename='uploads/' + p.main_image) }}{% endif %}"
+       data-url="{{ url_for('product_detail', product_id=p.id) }}"
+       data-order="{{ build_order_url(p.name, p.price, p.weight or '') }}">
+    <div class="card-shine"></div>
+    <div class="card-img">
+      {% if p.main_image %}
+      <img src="{{ url_for('static', filename='uploads/' + p.main_image) }}" alt="{{ p.name }}" loading="lazy">
+      {% else %}
+      <div class="no-img"><span>🐟</span></div>
+      {% endif %}
+      {% if p.is_featured %}<span class="badge">HIT</span>{% endif %}
+    </div>
+    <div class="card-body">
+      {% if p.category_name %}<span class="cat">{{ p.category_name }}</span>{% endif %}
+      <h3>{{ p.name }}</h3>
+      {% if p.weight %}<span class="weight">{{ p.weight }}</span>{% endif %}
+      <div class="card-foot">
+        <span class="price">{{ "%.0f"|format(p.price) }} <small>₴</small></span>
+        <span class="card-hint">Деталі →</span>
+      </div>
+    </div>
+  </div>
+</article>
