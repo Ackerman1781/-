@@ -6,17 +6,24 @@
   <div class="product-compact-card">
     <div class="product-compact-photo">
       {% if images %}
-      <img id="mainImg" src="{{ url_for('static', filename='uploads/' + images[0].filename) }}" alt="{{ product.name }}">
-      {% if images|length > 1 %}
-      <div class="product-compact-thumbs">
-        {% for img in images %}
-        <button type="button" class="{% if loop.first %}active{% endif %}"
-          onclick="document.getElementById('mainImg').src='{{ url_for('static', filename='uploads/' + img.filename) }}'; this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); this.classList.add('active');">
-          <img src="{{ url_for('static', filename='uploads/' + img.filename) }}" alt="">
-        </button>
-        {% endfor %}
+      <div class="gallery" id="gallery">
+        <div class="gallery-track" id="galleryTrack">
+          {% for img in images %}
+          <div class="gallery-slide">
+            <img src="{{ url_for('static', filename='uploads/' + img.filename) }}" alt="{{ product.name }}">
+          </div>
+          {% endfor %}
+        </div>
+        {% if images|length > 1 %}
+        <button type="button" class="gallery-arrow gallery-prev" aria-label="Попереднє фото">‹</button>
+        <button type="button" class="gallery-arrow gallery-next" aria-label="Наступне фото">›</button>
+        <div class="gallery-dots" id="galleryDots">
+          {% for img in images %}
+          <span class="gallery-dot {% if loop.first %}active{% endif %}"></span>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
-      {% endif %}
       {% else %}
       <div class="product-compact-no-photo"><span>🐟</span></div>
       {% endif %}
@@ -42,4 +49,41 @@
   <span class="mob-price">{{ "%.0f"|format(product.price) }} ₴</span>
   <a href="{{ telegram_order_url }}" class="btn btn-fire" target="_blank" rel="noopener">✈ Замовити</a>
 </div>
+
+{% if images|length > 1 %}
+<script>
+(function () {
+  var track = document.getElementById('galleryTrack');
+  var dots = document.querySelectorAll('#galleryDots .gallery-dot');
+  var prevBtn = document.querySelector('.gallery-prev');
+  var nextBtn = document.querySelector('.gallery-next');
+  var count = dots.length;
+
+  function setActive(i) {
+    dots.forEach(function (d, idx) { d.classList.toggle('active', idx === i); });
+  }
+
+  function goTo(i) {
+    i = Math.max(0, Math.min(count - 1, i));
+    track.scrollTo({ left: track.clientWidth * i, behavior: 'smooth' });
+  }
+
+  function currentIndex() {
+    return Math.round(track.scrollLeft / track.clientWidth);
+  }
+
+  track.addEventListener('scroll', function () {
+    window.clearTimeout(track._t);
+    track._t = window.setTimeout(function () { setActive(currentIndex()); }, 60);
+  });
+
+  prevBtn.addEventListener('click', function () { goTo(currentIndex() - 1); });
+  nextBtn.addEventListener('click', function () { goTo(currentIndex() + 1); });
+
+  dots.forEach(function (d, idx) {
+    d.addEventListener('click', function () { goTo(idx); });
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}
