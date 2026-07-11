@@ -1,0 +1,27 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Редагувати соцмережу{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Редагувати</h1>
+  <a href="{{ url_for('admin_social') }}" class="btn btn-sm">← Назад</a>
+</div>
+
+<form method="post" class="form-card">
+  <label>Назва *
+    <input type="text" name="name" value="{{ link.name }}" required>
+  </label>
+  <label>Посилання *
+    <input type="url" name="url" value="{{ link.url }}" required>
+  </label>
+  <label>Іконка
+    <input type="text" name="icon" value="{{ link.icon }}" maxlength="4">
+  </label>
+  <label>Порядок
+    <input type="number" name="sort_order" value="{{ link.sort_order }}" min="0">
+  </label>
+  <label class="chk"><input type="checkbox" name="is_active" {% if link.is_active %}checked{% endif %}> Показувати на сайті</label>
+  <div class="acts-row">
+    <button type="submit" class="btn btn-primary btn-lg">💾 Зберегти</button>
+  </div>
+</form>
+{% endblock %}

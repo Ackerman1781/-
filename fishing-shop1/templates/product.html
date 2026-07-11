@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — TREIL ZOOM{% endblock %}
+
+{% block content %}
+<article class="container product-compact">
+  <div class="product-compact-card">
+    <div class="product-compact-photo">
+      {% if images %}
+      <img id="mainImg" src="{{ url_for('static', filename='uploads/' + images[0].filename) }}" alt="{{ product.name }}">
+      {% if images|length > 1 %}
+      <div class="product-compact-thumbs">
+        {% for img in images %}
+        <button type="button" class="{% if loop.first %}active{% endif %}"
+          onclick="document.getElementById('mainImg').src='{{ url_for('static', filename='uploads/' + img.filename) }}'; this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); this.classList.add('active');">
+          <img src="{{ url_for('static', filename='uploads/' + img.filename) }}" alt="">
+        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="product-compact-no-photo"><span>🐟</span></div>
+      {% endif %}
+    </div>
+
+    <div class="product-compact-info">
+      {% if product.category_name %}<span class="cat">{{ product.category_name }}</span>{% endif %}
+      <h1>{{ product.name }}</h1>
+      {% if product.weight %}<p class="weight-line">Фасування: <strong>{{ product.weight }}</strong></p>{% endif %}
+      <p class="price-big">{{ "%.0f"|format(product.price) }} <small>₴</small></p>
+      {% if product.description %}
+      <div class="desc"><h2>Опис</h2><p>{{ product.description }}</p></div>
+      {% endif %}
+      <a href="{{ telegram_order_url }}" class="btn btn-fire btn-lg btn-full product-order-main desktop-order" target="_blank" rel="noopener">
+        ✈ Замовити в Telegram
+      </a>
+      <a href="{{ url_for('index') }}#catalog" class="back">← Назад до каталогу</a>
+    </div>
+  </div>
+</article>
+
+<div class="mobile-order-bar">
+  <span class="mob-price">{{ "%.0f"|format(product.price) }} ₴</span>
+  <a href="{{ telegram_order_url }}" class="btn btn-fire" target="_blank" rel="noopener">✈ Замовити</a>
+</div>
+{% endblock %}
